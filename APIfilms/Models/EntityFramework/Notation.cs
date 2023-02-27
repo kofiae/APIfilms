@@ -4,6 +4,7 @@ using System.Runtime.Intrinsics.X86;
 
 namespace APIfilms.Models.EntityFramework
 {
+    [Table("t_j_notation_not")]
     public partial class Notation
     {
         [Key]
@@ -17,10 +18,10 @@ namespace APIfilms.Models.EntityFramework
         [Column("not_note")]
         public int Note { get; set; }
 
-        [InverseProperty("Notation")]
+        [InverseProperty("Notes")]
         public virtual Utilisateur UtilisateurNotant { get; set; }
 
-        [InverseProperty("Notation")]
+        [InverseProperty("Notes")]
         public virtual Film FilmNote { get; set; }
 
 

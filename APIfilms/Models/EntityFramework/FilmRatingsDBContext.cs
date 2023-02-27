@@ -39,9 +39,7 @@ namespace APIfilms.Models.EntityFramework
 
                 entity.HasOne(d => d.NotesFilm)
                     .WithMany(p => p.Films)
-                    .HasForeignKey(d => d.FilmId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_flm_not");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
 
@@ -49,9 +47,7 @@ namespace APIfilms.Models.EntityFramework
             {
                 entity.HasOne(d => d.NotesUtilisateur)
                     .WithMany(p => p.Utilisateurs)
-                    .HasForeignKey(d => d.UtilisateurId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("fk_utl_not");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<Notation>(entity =>

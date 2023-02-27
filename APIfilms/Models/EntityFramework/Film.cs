@@ -31,14 +31,9 @@ namespace APIfilms.Models.EntityFramework
         [MaxLength(30)]
         public string Genre { get; set; }
 
-        [InverseProperty("Film")]
+        [InverseProperty("Films")]
         public virtual Notation NotesFilm { get; set; }
 
-
-
-        [InverseProperty("NotesUtilisateur")]
-        public virtual ICollection<Utilisateur> Utilisateurs { get; set; }
-        
         [InverseProperty("FilmNote")]
         public virtual ICollection<Notation> Notes { get; set; }
     }

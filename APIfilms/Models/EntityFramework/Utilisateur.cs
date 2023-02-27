@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace APIfilms.Models.EntityFramework
 {
+    [Table("t_e_utilisateur_utl")]
     public partial class Utilisateur
     {
         [Key]
@@ -54,7 +55,7 @@ namespace APIfilms.Models.EntityFramework
         public DateTime DateCreation { get; set; }
 
 
-        [InverseProperty("Utilisateur")]
+        [InverseProperty("Utilisateurs")]
         public virtual Notation NotesUtilisateur { get; set; }
 
 
