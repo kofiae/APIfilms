@@ -23,7 +23,7 @@ namespace APIfilms.Models.EntityFramework
         public virtual DbSet<Film> Films { get; set; } = null!;
         public virtual DbSet<Utilisateur> Utilisateurs { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
@@ -33,7 +33,7 @@ namespace APIfilms.Models.EntityFramework
                     .UseNpgsql("Server=localhost;port=5432;Database=FilmsRatingsDB; uid= postgres; password=postgres;");
 
             }
-        }
+        }*/
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

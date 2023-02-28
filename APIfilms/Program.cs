@@ -1,3 +1,6 @@
+using APIfilms.Models.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+
 namespace APIfilms
 {
     public class Program
@@ -6,6 +9,10 @@ namespace APIfilms
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddDbContext<FilmRatingsDBContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("FilmRatingsDBContext")));
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -13,6 +20,7 @@ namespace APIfilms
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
