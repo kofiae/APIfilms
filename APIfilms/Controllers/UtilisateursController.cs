@@ -9,7 +9,7 @@ using APIfilms.Models.EntityFramework;
 
 namespace APIfilms.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UtilisateursController : ControllerBase
     {
@@ -28,8 +28,8 @@ namespace APIfilms.Controllers
         }
 
         // GET: api/Utilisateurs/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Utilisateur>> GetUtilisateur(int id)
+        [HttpGet]
+        public async Task<ActionResult<Utilisateur>> GetUtilisateurById(int id)
         {
             var utilisateur = await _context.Utilisateurs.FindAsync(id);
 
@@ -41,9 +41,24 @@ namespace APIfilms.Controllers
             return utilisateur;
         }
 
+        //GET: api/Utilisateurs/aaaa@gmail.com
+        [HttpGet]
+        public async Task<ActionResult<Utilisateur>> GetUtilisateurByEmail(string email)
+        {
+            //_context.Utilisateurs.Any(e => e.Mail == email);
+            /*var utilisateur = await _context.Utilisateurs.FindAsync(e => e.Mail == email);
+
+            if (utilisateur == null)
+            {
+                return NotFound();
+            }
+
+            return utilisateur;*/
+        }
+
         // PUT: api/Utilisateurs/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut]
         public async Task<IActionResult> PutUtilisateur(int id, Utilisateur utilisateur)
         {
             if (id != utilisateur.UtilisateurId)
@@ -84,7 +99,7 @@ namespace APIfilms.Controllers
         }
 
         // DELETE: api/Utilisateurs/5
-        [HttpDelete("{id}")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteUtilisateur(int id)
         {
             var utilisateur = await _context.Utilisateurs.FindAsync(id);
