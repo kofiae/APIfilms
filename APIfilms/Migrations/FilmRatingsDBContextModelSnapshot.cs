@@ -31,28 +31,20 @@ namespace APIfilms.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FilmId"));
 
-                    b.Property<DateTime>("DateSortie")
+                    b.Property<DateTime?>("DateSortie")
                         .HasColumnType("date")
                         .HasColumnName("flm_datesortie");
 
-                    b.Property<decimal>("Duree")
-                        .HasColumnType("numeric")
+                    b.Property<decimal?>("Duree")
+                        .HasColumnType("numeric(3,0)")
                         .HasColumnName("flm_duree");
 
                     b.Property<string>("Genre")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("flm_genre");
 
-                    b.Property<int>("NotesFilmFilmId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("NotesFilmUtilisateurId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Resume")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("flm_resume");
 
@@ -62,9 +54,8 @@ namespace APIfilms.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("flm_titre");
 
-                    b.HasKey("FilmId");
-
-                    b.HasIndex("NotesFilmUtilisateurId", "NotesFilmFilmId");
+                    b.HasKey("FilmId")
+                        .HasName("pk_flm");
 
                     b.ToTable("t_e_film_flm");
                 });
@@ -88,7 +79,9 @@ namespace APIfilms.Migrations
 
                     b.HasIndex("FilmId");
 
-                    b.ToTable("Notes");
+                    b.ToTable("t_j_notation_not");
+
+                    b.HasCheckConstraint("ck_not_note", "not_note between 0 and 5");
                 });
 
             modelBuilder.Entity("APIfilms.Models.EntityFramework.Utilisateur", b =>
@@ -106,8 +99,10 @@ namespace APIfilms.Migrations
                         .HasColumnName("utl_cp");
 
                     b.Property<DateTime>("DateCreation")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("date")
-                        .HasColumnName("utl_datecreation");
+                        .HasColumnName("utl_datecreation")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<float?>("Latitude")
                         .HasColumnType("real")
@@ -118,6 +113,7 @@ namespace APIfilms.Migrations
                         .HasColumnName("utl_longitude");
 
                     b.Property<string>("Mail")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("utl_mail");
@@ -131,15 +127,11 @@ namespace APIfilms.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("utl_nom");
 
-                    b.Property<int>("NotesUtilisateurFilmId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("NotesUtilisateurUtilisateurId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Pays")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
+                        .HasDefaultValue("France")
                         .HasColumnName("utl_pays");
 
                     b.Property<string>("Prenom")
@@ -148,6 +140,7 @@ namespace APIfilms.Migrations
                         .HasColumnName("utl_prenom");
 
                     b.Property<string>("Pwd")
+                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
                         .HasColumnName("utl_pwd");
@@ -157,39 +150,33 @@ namespace APIfilms.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("utl_rue");
 
-                    b.Property<int>("Ville")
+                    b.Property<string>("Ville")
                         .HasMaxLength(50)
-                        .HasColumnType("integer")
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("utl_ville");
 
-                    b.HasKey("UtilisateurId");
+                    b.HasKey("UtilisateurId")
+                        .HasName("pk_utl");
 
-                    b.HasIndex("NotesUtilisateurUtilisateurId", "NotesUtilisateurFilmId");
+                    b.HasIndex(new[] { "Mail" }, "uq_utl_mail")
+                        .IsUnique();
 
-                    b.ToTable("Utilisateurs");
-                });
-
-            modelBuilder.Entity("APIfilms.Models.EntityFramework.Film", b =>
-                {
-                    b.HasOne("APIfilms.Models.EntityFramework.Notation", "NotesFilm")
-                        .WithMany("Films")
-                        .HasForeignKey("NotesFilmUtilisateurId", "NotesFilmFilmId")
-                        .IsRequired();
-
-                    b.Navigation("NotesFilm");
+                    b.ToTable("t_e_utilisateur_utl");
                 });
 
             modelBuilder.Entity("APIfilms.Models.EntityFramework.Notation", b =>
                 {
                     b.HasOne("APIfilms.Models.EntityFramework.Film", "FilmNote")
-                        .WithMany("Notes")
+                        .WithMany("NotesFilm")
                         .HasForeignKey("FilmId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_not_flm");
 
                     b.HasOne("APIfilms.Models.EntityFramework.Utilisateur", "UtilisateurNotant")
-                        .WithMany("Notes")
+                        .WithMany("NotesUtilisateur")
                         .HasForeignKey("UtilisateurId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_not_utl");
 
@@ -198,31 +185,14 @@ namespace APIfilms.Migrations
                     b.Navigation("UtilisateurNotant");
                 });
 
-            modelBuilder.Entity("APIfilms.Models.EntityFramework.Utilisateur", b =>
-                {
-                    b.HasOne("APIfilms.Models.EntityFramework.Notation", "NotesUtilisateur")
-                        .WithMany("Utilisateurs")
-                        .HasForeignKey("NotesUtilisateurUtilisateurId", "NotesUtilisateurFilmId")
-                        .IsRequired();
-
-                    b.Navigation("NotesUtilisateur");
-                });
-
             modelBuilder.Entity("APIfilms.Models.EntityFramework.Film", b =>
                 {
-                    b.Navigation("Notes");
-                });
-
-            modelBuilder.Entity("APIfilms.Models.EntityFramework.Notation", b =>
-                {
-                    b.Navigation("Films");
-
-                    b.Navigation("Utilisateurs");
+                    b.Navigation("NotesFilm");
                 });
 
             modelBuilder.Entity("APIfilms.Models.EntityFramework.Utilisateur", b =>
                 {
-                    b.Navigation("Notes");
+                    b.Navigation("NotesUtilisateur");
                 });
 #pragma warning restore 612, 618
         }

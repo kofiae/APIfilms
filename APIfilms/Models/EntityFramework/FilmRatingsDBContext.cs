@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Runtime.Intrinsics.X86;
+using System.Xml;
 
 namespace APIfilms.Models.EntityFramework
 {
@@ -36,38 +39,49 @@ namespace APIfilms.Models.EntityFramework
         {
             modelBuilder.Entity<Film>(entity =>
             {
+                entity.HasKey(e => new { e.FilmId }).HasName("pk_flm");
 
-                entity.HasOne(d => d.NotesFilm)
-                    .WithMany(p => p.Films)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                entity.Property(d => d.Resume).IsRequired(false);
+
+                entity.Property(d => d.DateSortie).IsRequired(false);
+
+                entity.Property(d => d.Duree).IsRequired(false);
+
+                entity.Property(d => d.Genre).IsRequired(false);
             });
 
 
             modelBuilder.Entity<Utilisateur>(entity =>
             {
-                entity.HasOne(d => d.NotesUtilisateur)
-                    .WithMany(p => p.Utilisateurs)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                entity.HasKey(e => new { e.UtilisateurId }).HasName("pk_utl");
+
+                entity.Property(d => d.Pays).HasDefaultValue("France");
+
+                entity.Property(d => d.DateCreation).HasDefaultValueSql("now()");
+
+
             });
 
             modelBuilder.Entity<Notation>(entity =>
             {
-                entity.HasKey(e => new { e.UtilisateurId, e.FilmId })
-                                    .HasName("pk_not");
+                entity.HasKey(e => new { e.UtilisateurId, e.FilmId }).HasName("pk_not");
 
                 entity.HasOne(d => d.UtilisateurNotant)
-                    .WithMany(p => p.Notes)
+                    .WithMany(p => p.NotesUtilisateur)
                     .HasForeignKey(d => d.UtilisateurId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("fk_not_utl");
 
                 entity.HasOne(d => d.FilmNote)
-                    .WithMany(p => p.Notes)
+                    .WithMany(p => p.NotesFilm)
                     .HasForeignKey(d => d.FilmId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("fk_not_flm");
-            });
 
+                entity.HasCheckConstraint("ck_not_note", "not_note between 0 and 5");
+                
+            });
+        ;
 
             OnModelCreatingPartial(modelBuilder);
         }
